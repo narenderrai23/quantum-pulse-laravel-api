@@ -37,13 +37,17 @@ class ChatController extends Controller
             $response = (new ChatAgent($history))->prompt($request->message);
 
             return response()->json(['reply' => $response->text]);
+        } catch (\Laravel\Ai\Exceptions\RateLimitedException $e) {
+            return response()->json([
+                'reply' => "I'm experiencing high demand right now. Please try again in a few moments!",
+            ], 200);
         } catch (\Throwable $e) {
-            if (str_contains($e->getMessage(), '429') || str_contains($e->getMessage(), 'quota')) {
+            if (str_contains($e->getMessage(), '429') || str_contains($e->getMessage(), 'quota') || str_contains($e->getMessage(), 'rate')) {
                 return response()->json([
-                    'reply' => "I'm experiencing high demand right now. Please try again in a few minutes!",
+                    'reply' => "I'm experiencing high demand right now. Please try again in a few moments!",
                 ], 200);
             }
-            return response()->json(['error' => 'AI service unavailable.'], 502);
+            return response()->json(['error' => 'AI service unavailable.', 'detail' => $e->getMessage()], 502);
         }
     }
 }

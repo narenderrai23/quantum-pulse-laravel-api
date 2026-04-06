@@ -18,5 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminSeeder::class);
         $this->call(LeadSeeder::class);
         $this->call(SettingSeeder::class);
+        $this->call(BillingServicesMasterSeeder::class);
+        $this->call(BillingOffersServicesSeeder::class);
     }
 }
